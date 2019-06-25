@@ -69,10 +69,16 @@ namespace winrt::TerminalApp::implementation
 
         wil::unique_folder_change_reader_nothrow _reader;
 
+        std::atomic<bool> _settingsReloadQueued{ false };
+
         void _Create();
         void _CreateNewTabFlyout();
 
-        fire_and_forget _ShowOkDialog(const winrt::hstring& titleKey, const winrt::hstring& contentKey);
+        fire_and_forget _ShowDialog(const winrt::Windows::Foundation::IInspectable& titleElement,
+                                    const winrt::Windows::Foundation::IInspectable& contentElement,
+                                    const winrt::hstring& closeButtonText);
+        void _ShowOkDialog(const winrt::hstring& titleKey, const winrt::hstring& contentKey);
+        void _ShowAboutDialog();
 
         [[nodiscard]] HRESULT _TryLoadSettings(const bool saveOnLoad) noexcept;
         void _LoadSettings();
@@ -81,10 +87,12 @@ namespace winrt::TerminalApp::implementation
         void _HookupKeyBindings(TerminalApp::AppKeyBindings bindings) noexcept;
 
         void _RegisterSettingsChange();
+        fire_and_forget _DispatchReloadSettings();
         void _ReloadSettings();
 
         void _SettingsButtonOnClick(const IInspectable& sender, const Windows::UI::Xaml::RoutedEventArgs& eventArgs);
         void _FeedbackButtonOnClick(const IInspectable& sender, const Windows::UI::Xaml::RoutedEventArgs& eventArgs);
+        void _AboutButtonOnClick(const IInspectable& sender, const Windows::UI::Xaml::RoutedEventArgs& eventArgs);
 
         void _UpdateTabView();
         void _UpdateTabIcon(std::shared_ptr<Tab> tab);
